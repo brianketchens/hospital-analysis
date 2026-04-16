@@ -1,0 +1,158 @@
+---
+title: "Hospital Patient Analysis Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    theme: flatly
+    source_code: embed
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(DT)
+library(scales)
+
+# Load clean data
+df_clean <- read.csv("data/healthcare_clean.csv") %>%
+  mutate(
+    date_of_admission = as.Date(date_of_admission),
+    discharge_date    = as.Date(discharge_date),
+    across(c(gender, blood_type, medical_condition, insurance_provider,
+             admission_type, medication, test_results,
+             age_group, billing_tier, data_quality_flag), as.factor)
+  )
+
+# Billing-safe subset
+df_billing <- df_clean %>%
+  filter(data_quality_flag == "OK")
+
+# Pre-compute key metrics for value boxes
+n_patients   <- nrow(df_clean)
+avg_los      <- round(mean(df_clean$length_of_stay), 1)
+avg_billing  <- dollar(round(mean(df_billing$billing_amount), 0))
+pct_abnormal <- round(mean(df_clean$test_results == "Abnormal") * 100, 1)
+```
+
+Row {data-height=150}
+-----------------------------------------------------------------------
+
+### Total Patients
+
+```{r}
+valueBox(
+  value   = format(n_patients, big.mark = ","),
+  caption = "Total Patients",
+  icon    = "fa-hospital",
+  color   = "#2C3E50"
+)
+```
+
+### Average Length of Stay
+
+```{r}
+valueBox(
+  value   = paste(avg_los, "days"),
+  caption = "Average Length of Stay",
+  icon    = "fa-calendar",
+  color   = "#2980B9"
+)
+```
+
+### Average Billing Amount
+
+```{r}
+valueBox(
+  value   = avg_billing,
+  caption = "Average Billing Amount",
+  icon    = "fa-dollar-sign",
+  color   = "#27AE60"
+)
+```
+
+### Abnormal Test Results
+
+```{r}
+valueBox(
+  value   = paste0(pct_abnormal, "%"),
+  caption = "Abnormal Test Results",
+  icon    = "fa-flask",
+  color   = "#E74C3C"
+)
+```
+
+Row {data-height=850}
+-----------------------------------------------------------------------
+
+### Length of Stay by Condition and Admission Type
+
+```{r}
+p <- df_clean %>%
+  group_by(medical_condition, admission_type) %>%
+  summarise(
+    avg_los    = round(mean(length_of_stay), 1),
+    n_patients = n(),
+    .groups    = "drop"
+  ) %>%
+  ggplot(aes(x    = reorder(medical_condition, avg_los),
+             y    = avg_los,
+             fill = admission_type,
+             text = paste0(
+               "Condition: ",  medical_condition,           "\n",
+               "Admission: ",  admission_type,              "\n",
+               "Avg LOS: ",    avg_los, " days",            "\n",
+               "Patients: ",   format(n_patients, big.mark = ",")
+             ))) +
+  geom_col(position = "dodge", alpha = 0.85) +
+  scale_fill_manual(values = c(
+    "Elective"  = "#2C3E50",
+    "Emergency" = "#E74C3C",
+    "Urgent"    = "#F39C12"
+  )) +
+  coord_flip() +
+  labs(
+    x    = NULL,
+    y    = "Average Length of Stay (Days)",
+    fill = "Admission Type"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+
+ggplotly(p, tooltip = "text") %>%
+  layout(legend = list(orientation = "h", y = -0.15))
+```
+
+### Patient Data Explorer {data-width=400}
+
+```{r}
+# DT renders in the browser so large datasets cause timeouts
+# 2,000 rows is enough to demonstrate full interactivity
+# We note the sampling in the panel so viewers understand
+
+set.seed(42)
+df_clean %>%
+  slice_sample(n = 2000) %>%
+  select(
+    "Condition"    = medical_condition,
+    "Age Group"    = age_group,
+    "Admission"    = admission_type,
+    "LOS (Days)"   = length_of_stay,
+    "Billing ($)"  = billing_amount,
+    "Insurance"    = insurance_provider,
+    "Test Result"  = test_results
+  ) %>%
+  mutate(`Billing ($)` = round(`Billing ($)`, 0)) %>%
+  datatable(
+    caption  = "Showing a random sample of 2,000 patients — full dataset contains 55,392 records",
+    options  = list(
+      pageLength = 12,
+      scrollY    = "550px",
+      dom        = "ftip"
+    ),
+    filter   = "top",
+    rownames = FALSE,
+    class    = "compact"
+  )
+```
