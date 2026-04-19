@@ -1,9 +1,139 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta http-equiv="refresh" content="0; url=hospital_analysis.html">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospital Patient Analysis — Brian Ketchens</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 0 24px;
+      color: #24292e;
+      line-height: 1.6;
+    }
+    h1 { font-size: 28px; border-bottom: 1px solid #eaecef; padding-bottom: 12px; }
+    h2 { font-size: 20px; border-bottom: 1px solid #eaecef; padding-bottom: 8px; margin-top: 32px; }
+    h3 { font-size: 16px; margin-top: 24px; }
+    a { color: #0366d6; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-size: 14px; }
+    table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+    th { background: #1F3864; color: white; padding: 8px 12px; text-align: left; }
+    td { padding: 8px 12px; border-bottom: 1px solid #eaecef; }
+    tr:nth-child(even) { background: #f6f8fa; }
+    .nav-bar {
+      background: #1F3864;
+      padding: 12px 24px;
+      margin: -40px -24px 40px -24px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .nav-bar a {
+      color: white;
+      font-size: 14px;
+      padding: 6px 14px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 4px;
+    }
+    .nav-bar a:hover { background: rgba(255,255,255,0.15); text-decoration: none; }
+    .nav-bar .title { color: rgba(255,255,255,0.7); font-size: 13px; flex: 1; }
+    blockquote {
+      border-left: 4px solid #E74C3C;
+      margin: 16px 0;
+      padding: 8px 16px;
+      background: #f6f8fa;
+      color: #586069;
+    }
+  </style>
 </head>
 <body>
-  <p>Redirecting to <a href="hospital_analysis.html">Hospital Patient Analysis Report</a>...</p>
+
+  <div class="nav-bar">
+    <span class="title">Hospital Patient Analysis — Brian Ketchens</span>
+    <a href="hospital_analysis.html">📄 Full Report</a>
+    <a href="hospital_dashboard.html">📊 Dashboard</a>
+    <a href="https://github.com/brianketchens/hospital-analysis">💻 GitHub</a>
+  </div>
+
+  <h1>Hospital Patient Analysis</h1>
+  <p>An exploratory and predictive analysis of inpatient hospital care patterns
+  developed as a portfolio demonstration of healthcare data analytics competency in R.</p>
+
+  <h2>Project Overview</h2>
+  <p>This project analyzes 55,500 inpatient patient records spanning May 2019 through
+  May 2024, examining length of stay, billing patterns, admission characteristics,
+  and test result outcomes across six medical conditions, three admission types,
+  and five insurance providers.</p>
+
+  <p>The analysis demonstrates a production-oriented analytical workflow including
+  a reusable data cleaning pipeline, consistent visualization standards, and
+  structured predictive modeling using the tidymodels framework — skills directly
+  applicable to hospital analytics, clinical operations, and healthcare business
+  intelligence roles.</p>
+
+  <h2>Key Skills Demonstrated</h2>
+  <table>
+    <tr><th>Skill</th><th>Implementation</th></tr>
+    <tr><td>Functional programming</td><td>Custom reusable cleaning function applied via <code>purrr::map()</code></td></tr>
+    <tr><td>Feature engineering</td><td>LOS calculation, date features, age groups, billing tiers</td></tr>
+    <tr><td>Data quality management</td><td>Audit trail flagging — 108 negative billing records documented</td></tr>
+    <tr><td>Data visualization</td><td>Custom <code>ggplot2</code> theme applied consistently across all charts</td></tr>
+    <tr><td>Predictive modeling</td><td>Two <code>tidymodels</code> pipelines with proper train/test evaluation</td></tr>
+    <tr><td>Analytical communication</td><td>Null results interpreted and reported with clinical context</td></tr>
+  </table>
+
+  <h2>Report Sections</h2>
+  <ol>
+    <li><strong>Executive Summary</strong> — Key findings at a glance</li>
+    <li><strong>Background &amp; Objectives</strong> — Analytical questions and dataset overview</li>
+    <li><strong>Data Preparation</strong> — Cleaning pipeline, quality flagging, feature engineering</li>
+    <li><strong>Exploratory Findings</strong> — Four visualizations with operational interpretation</li>
+    <li><strong>Predictive Modeling</strong> — Linear and logistic regression via tidymodels</li>
+    <li><strong>Limitations</strong> — Honest assessment of synthetic data constraints</li>
+    <li><strong>Recommendations</strong> — Extensions for real clinical data environments</li>
+  </ol>
+
+  <h2>Key Findings</h2>
+  <ul>
+    <li>Average length of stay was <strong>15.5 days</strong> with less than one day of variation
+    across all 18 condition-admission type combinations</li>
+    <li>Billing averaged <strong>$25,539</strong> per admission with no material payer mix
+    differential across five insurance providers</li>
+    <li>Predictive modeling confirmed absence of learnable signal — consistent with
+    synthetically generated data where outcomes are sampled independently of
+    patient characteristics</li>
+    <li>Recommendations for extending this framework to HCUP administrative data
+    are provided in the report</li>
+  </ul>
+
+  <h2>Tools and Packages</h2>
+  <table>
+    <tr><th>Category</th><th>Tools</th></tr>
+    <tr><td>Data manipulation</td><td><code>tidyverse</code>, <code>janitor</code>, <code>skimr</code></td></tr>
+    <tr><td>Visualization</td><td><code>ggplot2</code>, <code>plotly</code></td></tr>
+    <tr><td>Modeling</td><td><code>tidymodels</code></td></tr>
+    <tr><td>Reporting</td><td><code>R Markdown</code>, <code>knitr</code>, <code>kableExtra</code></td></tr>
+    <tr><td>Dashboard</td><td><code>flexdashboard</code>, <code>DT</code></td></tr>
+  </table>
+
+  <h2>Data Source</h2>
+  <p>Prasad, R. (2024). <em>Healthcare Dataset</em>. Kaggle.<br>
+  <a href="https://www.kaggle.com/datasets/prasad22/healthcare-dataset" target="_blank">
+  kaggle.com/datasets/prasad22/healthcare-dataset</a></p>
+
+  <h2>Author</h2>
+  <p><strong>Brian Ketchens</strong><br>
+  <a href="https://linkedin.com/in/brian-ketchens-2b96ba56" target="_blank">LinkedIn</a> |
+  <a href="https://brianketchens.github.io" target="_blank">Portfolio</a> |
+  <a href="https://github.com/brianketchens" target="_blank">GitHub</a></p>
+
+  <hr>
+  <p style="font-size: 13px; color: #586069;">
+    Analysis conducted in R | Report generated with R Markdown
+  </p>
+
 </body>
 </html>
